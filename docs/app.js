@@ -240,7 +240,7 @@ async function shareVoicePack() {
   if (navigator.canShare?.({ files: [file] })) {
     try {
       await navigator.share({ files: [file], title: "Private ITIL Voice Coach", text: "Attach this file to my private ITIL study chat." });
-      status.textContent = "Choose ChatGPT in the share sheet, then keep that chat for daily voice study.";
+      status.textContent = "In ChatGPT, add the shared file as a Source in your ITIL Voice Coach project.";
       return;
     } catch (error) { if (error.name === "AbortError") return; }
   }
