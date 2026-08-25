@@ -56,5 +56,7 @@ if("serviceWorker" in navigator)navigator.serviceWorker.register("sw.js");
 </script></body></html>`;
 writeFileSync(`${output}/index.html`, loader);
 writeFileSync(`${output}/sw.js`, `const C="itil-private-${Date.now()}";self.addEventListener("install",e=>e.waitUntil(caches.open(C).then(c=>c.addAll(["./","./index.html"]))));self.addEventListener("activate",e=>e.waitUntil(caches.keys().then(k=>Promise.all(k.filter(x=>x!==C).map(x=>caches.delete(x))))));self.addEventListener("fetch",e=>e.respondWith(caches.match(e.request).then(r=>r||fetch(e.request))));\n`);
-writeFileSync(`${output}/README.md`, "# Encrypted ITIL Coach hosting\n\nThe application payload is AES-256-GCM encrypted. No passphrase, course content, answers, or learner progress is stored in this repository.\n");
+if (!existsSync(`${output}/README.md`)) {
+  writeFileSync(`${output}/README.md`, "# Encrypted ITIL Coach hosting\n\nThe application payload is AES-256-GCM encrypted. No passphrase, course content, answers, or learner progress is stored in this repository.\n");
+}
 console.log(`Encrypted deployment written to ${output}. Passphrase remains only in ${passwordFile}.`);
