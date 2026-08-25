@@ -228,6 +228,34 @@ function askChatGPT() {
   const prompt = `Act as my ITIL 4 Foundation exam coach. My weakest areas are ${weak}. Quiz me with five new exam-style questions, one at a time. Do not reveal an answer until I respond. After each response, explain the formal ITIL distinction and correct me directly.`;
   window.open(`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`, "_blank", "noopener");
 }
+function voicePackFile() {
+  if (!window.ITIL_VOICE_PACK_B64) return null;
+  const binary = atob(window.ITIL_VOICE_PACK_B64), bytes = new Uint8Array(binary.length);
+  for (let i = 0; i < binary.length; i++) bytes[i] = binary.charCodeAt(i);
+  return new File([bytes], "ITIL-ChatGPT-Voice-Coach.txt", { type: "text/plain" });
+}
+async function shareVoicePack() {
+  const file = voicePackFile(), status = document.querySelector("#voicePackStatus");
+  if (!file) return;
+  if (navigator.canShare?.({ files: [file] })) {
+    try {
+      await navigator.share({ files: [file], title: "Private ITIL Voice Coach", text: "Attach this file to my private ITIL study chat." });
+      status.textContent = "Choose ChatGPT in the share sheet, then keep that chat for daily voice study.";
+      return;
+    } catch (error) { if (error.name === "AbortError") return; }
+  }
+  downloadVoicePack();
+}
+function downloadVoicePack() {
+  const file = voicePackFile(), status = document.querySelector("#voicePackStatus"); if (!file) return;
+  const link = document.createElement("a"); link.href = URL.createObjectURL(file); link.download = file.name; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+  status.textContent = "Saved. In ChatGPT, create an ITIL project and add this file as a Source.";
+}
+async function copyActivation() {
+  const phrase = "Start my ITIL 4 diagnostic using the Voice Coach pack. Ask one question at a time.";
+  await navigator.clipboard.writeText(phrase);
+  document.querySelector("#voicePackStatus").textContent = "Activation phrase copied. Paste or say it in ChatGPT.";
+}
 function addCalendarReminder() {
   const [hour, minute] = document.querySelector("#reminderTime").value.split(":").map(Number);
   const start = new Date(); start.setHours(hour, minute, 0, 0); if (start < new Date()) start.setDate(start.getDate() + 1);
@@ -249,11 +277,15 @@ document.querySelector("#startMock").addEventListener("click", () => startQuiz("
 document.querySelector("#nextQuestion").addEventListener("click", nextQuestion);
 document.querySelector("#askCoach").addEventListener("click", askChatGPT);
 document.querySelector("#addReminder").addEventListener("click", addCalendarReminder);
+document.querySelector("#shareVoicePack").addEventListener("click", shareVoicePack);
+document.querySelector("#downloadVoicePack").addEventListener("click", downloadVoicePack);
+document.querySelector("#copyActivation").addEventListener("click", copyActivation);
 document.querySelector("#closeLesson").addEventListener("click", () => { const dialog = document.querySelector("#lessonDialog"); if (!state.reviewed.includes(dialog.dataset.lesson)) state.reviewed.push(dialog.dataset.lesson); touchStudyDay(); saveState(); dialog.close(); renderModules(); if (pendingQuizMode) { const mode = pendingQuizMode; pendingQuizMode = null; startQuiz(mode); } });
 document.querySelector("#resetProgress").addEventListener("click", () => { if (confirm("Reset all lessons, answers, streak and mock scores on this device?")) { const version = state.version; state = { ...emptyState(), version }; saveState(); renderModules(); renderTopicProgress(); renderMockHistory(); } });
 
 const versionDialog = document.querySelector("#versionDialog");
 versionDialog.addEventListener("close", () => { if (versionDialog.returnValue) { state.version = versionDialog.returnValue; saveState(); } });
 if (!state.version) versionDialog.showModal();
+if (window.ITIL_VOICE_PACK_B64) document.querySelector("#voicePackPanel").classList.remove("hidden");
 renderModules(); renderDashboard(); renderMockHistory();
 if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");

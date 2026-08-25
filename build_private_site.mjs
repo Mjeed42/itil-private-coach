@@ -19,12 +19,13 @@ let html = readFileSync(`${source}/index.html`, "utf8");
 const css = readFileSync(`${source}/styles.css`, "utf8");
 const questions = readFileSync(`${source}/questions.js`, "utf8").replaceAll("</script", "<\\/script");
 const app = readFileSync(`${source}/app.js`, "utf8").replaceAll("</script", "<\\/script");
+const voicePack = readFileSync("itil-study-agent/ITIL-ChatGPT-Voice-Coach.txt").toString("base64");
 const icon = encodeURIComponent(readFileSync(`${source}/icon.svg`, "utf8"));
 html = html
   .replace('<link rel="manifest" href="manifest.webmanifest">', "")
   .replace('<link rel="apple-touch-icon" href="icon.svg">', `<link rel="apple-touch-icon" href="data:image/svg+xml,${icon}">`)
   .replace('<link rel="stylesheet" href="styles.css">', `<style>${css}</style>`)
-  .replace('<script src="questions.js"></script>', `<script>${questions}</script>`)
+  .replace('<script src="questions.js"></script>', `<script>window.ITIL_VOICE_PACK_B64=${JSON.stringify(voicePack)};</script><script>${questions}</script>`)
   .replace('<script src="app.js"></script>', `<script>${app}</script>`);
 
 const salt = randomBytes(16);

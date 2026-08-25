@@ -52,6 +52,7 @@ main { max-width: 760px; margin: 0 auto; padding: 18px 16px 104px; }
 .section-heading { display: flex; gap: 14px; align-items: start; justify-content: space-between; }.section-heading h2,.panel h2 { margin: 4px 0 14px; font-size: 20px; }.muted { color: var(--muted); line-height: 1.45; }
 .progress-track { height: 9px; overflow: hidden; border-radius: 99px; background: #e8edf3; }.progress-track.slim { height: 5px; margin-bottom: 18px; }.progress-fill { height: 100%; width: 0; border-radius: inherit; background: linear-gradient(90deg, var(--blue), #28a9a1); transition: width .35s ease; }
 .install-panel { border-left: 4px solid var(--gold); }.install-panel h2 { margin-bottom: 5px; }
+.voice-panel { border-left: 4px solid #7c3aed; }.voice-panel h2 { margin-bottom: 5px; }.voice-panel button { margin-top: 9px; }.voice-panel .text-button { color: var(--blue); }
 .reminder-row { display: grid; grid-template-columns: 1fr auto; gap: 8px; align-items: center; margin-top: 14px; padding-top: 14px; border-top: 1px solid var(--line); }.reminder-row label { font-size: 12px; color: var(--muted); font-weight: 700; }.reminder-row input { min-height: 43px; padding: 8px; color: var(--ink); background: white; border: 1px solid var(--line); border-radius: 10px; }.reminder-row button { grid-column: 1 / -1; }
 .page-title { padding: 8px 3px 13px; }.page-title h2 { font-size: 29px; letter-spacing: -.8px; margin: 5px 0 7px; }.page-title p:last-child { color: var(--muted); line-height: 1.5; margin: 0; }
 
