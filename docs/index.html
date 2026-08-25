@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102a43">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="ITIL Coach">
+  <title>ITIL 4 Exam Coach</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="apple-touch-icon" href="icon.svg">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <div>
+      <p class="eyebrow">YOUR DAILY STUDY PARTNER</p>
+      <h1>ITIL 4 Exam Coach</h1>
+    </div>
+    <div class="streak" aria-label="Current study streak"><span>🔥</span><strong id="streak">0</strong><small>days</small></div>
+  </header>
+
+  <main>
+    <section id="home" class="view active">
+      <div id="versionWarning" class="alert hidden"></div>
+      <article class="hero-card">
+        <div class="hero-copy">
+          <span class="pill" id="todayLabel">TODAY</span>
+          <h2 id="dailyTitle">Your focused session is ready</h2>
+          <p id="dailySubtitle">Review weak areas, learn one concept, then prove it with questions.</p>
+        </div>
+        <button class="primary large" id="startDaily">Start 15-minute session</button>
+      </article>
+
+      <div class="stats-grid">
+        <article class="stat"><span>Mastery</span><strong id="mastery">0%</strong><small>Target: 80%</small></article>
+        <article class="stat"><span>Answered</span><strong id="answered">0</strong><small>practice questions</small></article>
+        <article class="stat"><span>Best mock</span><strong id="bestMock">—</strong><small>Target: 80%+</small></article>
+      </div>
+
+      <section class="panel">
+        <div class="section-heading"><div><p class="eyebrow">READINESS</p><h2>Path to exam day</h2></div><span id="readinessBadge" class="badge">Building foundation</span></div>
+        <div class="progress-track"><div id="overallBar" class="progress-fill"></div></div>
+        <p id="readinessText" class="muted">Complete the diagnostic to establish your baseline.</p>
+      </section>
+
+      <section class="panel install-panel">
+        <div><p class="eyebrow">IPHONE</p><h2>Keep it on your Home Screen</h2><p class="muted">In Safari: Share → Add to Home Screen. Your progress stays on this phone.</p></div>
+      </section>
+    </section>
+
+    <section id="learn" class="view">
+      <div class="page-title"><p class="eyebrow">COMPLETE CURRICULUM</p><h2>Learn the framework</h2><p>Short, exam-focused lessons with the distinctions questions are built around.</p></div>
+      <div id="moduleList" class="module-list"></div>
+    </section>
+
+    <section id="coach" class="view">
+      <div class="page-title"><p class="eyebrow">ADAPTIVE PRACTICE</p><h2>Your coach</h2><p id="coachIntro">Questions adapt toward your weakest topics.</p></div>
+      <div id="coachSetup" class="panel coach-setup">
+        <button class="choice-card" data-mode="diagnostic"><strong>12-question diagnostic</strong><span>Find your starting point</span></button>
+        <button class="choice-card" data-mode="quick"><strong>Quick 5</strong><span>A commute-sized drill</span></button>
+        <button class="choice-card" data-mode="adaptive"><strong>Daily adaptive 10</strong><span>Prioritize weak and overdue topics</span></button>
+      </div>
+      <div id="quizArea" class="hidden">
+        <div class="quiz-meta"><span id="quizProgress">Question 1</span><span id="quizScore">0 correct</span></div>
+        <div class="progress-track slim"><div id="quizBar" class="progress-fill"></div></div>
+        <article class="chat-card">
+          <div class="coach-avatar">C</div>
+          <div class="bubble"><span id="questionTopic" class="pill">CONCEPTS</span><p id="questionText"></p><p id="legacyNote" class="legacy hidden">This source uses the older term “change control”; current ITIL 4 material commonly uses “change enablement.”</p></div>
+        </article>
+        <div id="answerOptions" class="answers"></div>
+        <article id="feedback" class="feedback hidden"></article>
+        <button id="nextQuestion" class="primary full hidden">Next question</button>
+      </div>
+      <div id="quizResult" class="panel hidden"></div>
+    </section>
+
+    <section id="exam" class="view">
+      <div class="page-title"><p class="eyebrow">EXAM SIMULATION</p><h2>Prove readiness</h2><p>40 questions, 60-minute target, feedback after submission.</p></div>
+      <article class="panel exam-card">
+        <div class="exam-number">40</div>
+        <div><h3>Fresh mixed mock</h3><p class="muted">Closed-book. Pass mark is 65%; our readiness target is 80%.</p></div>
+        <button class="primary full" id="startMock">Start mock exam</button>
+      </article>
+      <div id="mockHistory" class="panel"></div>
+    </section>
+
+    <section id="progress" class="view">
+      <div class="page-title"><p class="eyebrow">HONEST FEEDBACK</p><h2>Your progress</h2><p>Mastery is based on your answers, not time spent.</p></div>
+      <div id="topicProgress" class="panel"></div>
+      <div class="panel actions-panel">
+        <button class="secondary full" id="askCoach">Ask ChatGPT about my weak areas</button>
+        <button class="text-button" id="resetProgress">Reset all progress</button>
+      </div>
+    </section>
+  </main>
+
+  <nav class="bottom-nav" aria-label="Main navigation">
+    <button class="nav-button active" data-view="home"><span>⌂</span>Today</button>
+    <button class="nav-button" data-view="learn"><span>▤</span>Learn</button>
+    <button class="nav-button" data-view="coach"><span>✦</span>Coach</button>
+    <button class="nav-button" data-view="exam"><span>✓</span>Mock</button>
+    <button class="nav-button" data-view="progress"><span>◔</span>Progress</button>
+  </nav>
+
+  <dialog id="versionDialog">
+    <form method="dialog">
+      <p class="eyebrow">FIRST, PROTECT YOUR STUDY TIME</p>
+      <h2>Which exam are you taking?</h2>
+      <p>This app is built from your ITIL 4 Foundation course. PeopleCert also has a newer Version 5 exam, and the two should not be mixed.</p>
+      <button value="itil4" class="primary full">ITIL 4 Foundation</button>
+      <button value="itil5" class="secondary full">ITIL Foundation (Version 5)</button>
+      <p class="micro">Check the exact name in your PeopleCert booking if you are unsure.</p>
+    </form>
+  </dialog>
+
+  <dialog id="lessonDialog"><div id="lessonContent"></div><button class="primary full" id="closeLesson">Mark reviewed & close</button></dialog>
+
+  <script src="questions.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>
