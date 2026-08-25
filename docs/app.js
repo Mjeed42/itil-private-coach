@@ -70,6 +70,7 @@ const today = () => new Date().toISOString().slice(0, 10);
 const emptyState = () => ({ version: null, answers: {}, topics: {}, reviewed: [], mocks: [], streak: 0, lastStudy: null });
 let state = loadState();
 let quiz = null;
+let pendingQuizMode = null;
 
 function loadState() {
   try { return { ...emptyState(), ...JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}") }; }
@@ -179,7 +180,12 @@ function renderQuestion() {
 function answerQuestion(selected) {
   const q = quiz.questions[quiz.index], correct = selected === q.answer;
   quiz.responses.push({ q, selected, correct }); if (correct) quiz.correct++;
-  document.querySelectorAll(".answer").forEach((button, index) => { button.disabled = true; if (index === q.answer) button.classList.add("correct"); if (index === selected && !correct) button.classList.add("wrong"); });
+  document.querySelectorAll(".answer").forEach((button, index) => {
+    button.disabled = true;
+    if (quiz.mode === "mock") { if (index === selected) button.classList.add("selected"); return; }
+    if (index === q.answer) button.classList.add("correct");
+    if (index === selected && !correct) button.classList.add("wrong");
+  });
   if (quiz.mode !== "mock") {
     recordAnswer(q, correct);
     const feedback = document.querySelector("#feedback"); feedback.className = `feedback ${correct ? "good" : "bad"}`;
@@ -225,11 +231,16 @@ function askChatGPT() {
 
 document.querySelectorAll(".nav-button").forEach(b => b.addEventListener("click", () => navigate(b.dataset.view)));
 document.querySelectorAll(".choice-card").forEach(b => b.addEventListener("click", () => startQuiz(b.dataset.mode)));
-document.querySelector("#startDaily").addEventListener("click", () => startQuiz(Object.keys(state.answers).length < 12 ? "diagnostic" : "adaptive"));
+document.querySelector("#startDaily").addEventListener("click", () => {
+  const mode = Object.keys(state.answers).length < 12 ? "diagnostic" : "adaptive";
+  const nextLesson = LESSONS.find(lesson => !state.reviewed.includes(lesson.id));
+  if (nextLesson) { pendingQuizMode = mode; openLesson(nextLesson); }
+  else startQuiz(mode);
+});
 document.querySelector("#startMock").addEventListener("click", () => startQuiz("mock"));
 document.querySelector("#nextQuestion").addEventListener("click", nextQuestion);
 document.querySelector("#askCoach").addEventListener("click", askChatGPT);
-document.querySelector("#closeLesson").addEventListener("click", () => { const dialog = document.querySelector("#lessonDialog"); if (!state.reviewed.includes(dialog.dataset.lesson)) state.reviewed.push(dialog.dataset.lesson); touchStudyDay(); saveState(); dialog.close(); renderModules(); });
+document.querySelector("#closeLesson").addEventListener("click", () => { const dialog = document.querySelector("#lessonDialog"); if (!state.reviewed.includes(dialog.dataset.lesson)) state.reviewed.push(dialog.dataset.lesson); touchStudyDay(); saveState(); dialog.close(); renderModules(); if (pendingQuizMode) { const mode = pendingQuizMode; pendingQuizMode = null; startQuiz(mode); } });
 document.querySelector("#resetProgress").addEventListener("click", () => { if (confirm("Reset all lessons, answers, streak and mock scores on this device?")) { const version = state.version; state = { ...emptyState(), version }; saveState(); renderModules(); renderTopicProgress(); renderMockHistory(); } });
 
 const versionDialog = document.querySelector("#versionDialog");
