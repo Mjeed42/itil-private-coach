@@ -228,6 +228,14 @@ function askChatGPT() {
   const prompt = `Act as my ITIL 4 Foundation exam coach. My weakest areas are ${weak}. Quiz me with five new exam-style questions, one at a time. Do not reveal an answer until I respond. After each response, explain the formal ITIL distinction and correct me directly.`;
   window.open(`https://chatgpt.com/?q=${encodeURIComponent(prompt)}`, "_blank", "noopener");
 }
+function addCalendarReminder() {
+  const [hour, minute] = document.querySelector("#reminderTime").value.split(":").map(Number);
+  const start = new Date(); start.setHours(hour, minute, 0, 0); if (start < new Date()) start.setDate(start.getDate() + 1);
+  const end = new Date(start.getTime() + 20 * 60 * 1000);
+  const stamp = value => `${value.getFullYear()}${String(value.getMonth()+1).padStart(2,"0")}${String(value.getDate()).padStart(2,"0")}T${String(value.getHours()).padStart(2,"0")}${String(value.getMinutes()).padStart(2,"0")}00`;
+  const calendar = ["BEGIN:VCALENDAR","VERSION:2.0","PRODID:-//ITIL Coach//Daily Study//EN","CALSCALE:GREGORIAN","BEGIN:VEVENT",`UID:itil-daily-${Date.now()}@mjeed42.github.io`,`DTSTART;TZID=Asia/Riyadh:${stamp(start)}`,`DTEND;TZID=Asia/Riyadh:${stamp(end)}`,"RRULE:FREQ=DAILY","SUMMARY:Study with ITIL Exam Coach","DESCRIPTION:Open the ITIL Coach and complete today's focused session.","BEGIN:VALARM","TRIGGER:-PT5M","ACTION:DISPLAY","DESCRIPTION:Your ITIL study session starts in 5 minutes.","END:VALARM","END:VEVENT","END:VCALENDAR"].join("\r\n");
+  const link = document.createElement("a"); link.href = URL.createObjectURL(new Blob([calendar], { type: "text/calendar" })); link.download = "ITIL-daily-study.ics"; link.click(); setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+}
 
 document.querySelectorAll(".nav-button").forEach(b => b.addEventListener("click", () => navigate(b.dataset.view)));
 document.querySelectorAll(".choice-card").forEach(b => b.addEventListener("click", () => startQuiz(b.dataset.mode)));
@@ -240,6 +248,7 @@ document.querySelector("#startDaily").addEventListener("click", () => {
 document.querySelector("#startMock").addEventListener("click", () => startQuiz("mock"));
 document.querySelector("#nextQuestion").addEventListener("click", nextQuestion);
 document.querySelector("#askCoach").addEventListener("click", askChatGPT);
+document.querySelector("#addReminder").addEventListener("click", addCalendarReminder);
 document.querySelector("#closeLesson").addEventListener("click", () => { const dialog = document.querySelector("#lessonDialog"); if (!state.reviewed.includes(dialog.dataset.lesson)) state.reviewed.push(dialog.dataset.lesson); touchStudyDay(); saveState(); dialog.close(); renderModules(); if (pendingQuizMode) { const mode = pendingQuizMode; pendingQuizMode = null; startQuiz(mode); } });
 document.querySelector("#resetProgress").addEventListener("click", () => { if (confirm("Reset all lessons, answers, streak and mock scores on this device?")) { const version = state.version; state = { ...emptyState(), version }; saveState(); renderModules(); renderTopicProgress(); renderMockHistory(); } });
 
